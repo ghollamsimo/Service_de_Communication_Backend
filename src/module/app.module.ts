@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from '../controllers/auth.controller';
 import { AuthService } from '../services/auth.service';
-import { AuthImplementation } from '../repository/implementations/auth.implementation'; // Import AuthImplementation
-import { MongooseModule } from "@nestjs/mongoose";
-import { User, UserModelSchema } from "../schemas/user.schema";
+import { AuthImplementation } from '../repository/implementations/auth.implementation';
+import { MongooseModule } from '@nestjs/mongoose';
+import { User, UserModelSchema } from '../schemas/user.schema';
 
 @Module({
   imports: [
@@ -12,5 +12,6 @@ import { User, UserModelSchema } from "../schemas/user.schema";
   ],
   controllers: [AuthController],
   providers: [AuthService, AuthImplementation],
+  exports: [AuthImplementation],
 })
 export class AppModule {}

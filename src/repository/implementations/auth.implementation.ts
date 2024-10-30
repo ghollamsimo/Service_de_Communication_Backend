@@ -1,23 +1,21 @@
-import { AuthInterface } from "../interfaces/auth.interface";
-import { UserEntity } from "../../entities/user.entity";
-import { GenericDao } from "../../dao/generic.dao";
-import { User, UserDocument } from "../../schemas/user.schema";
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { User, UserDocument } from '../../schemas/user.schema';
+import { UserEntity } from '../../entities/user.entity';
+import {AuthInterface} from "../interfaces/auth.interface";
+import * as bcrypt from 'bcrypt';
 
-export class AuthImplementation implements AuthInterface {
-    private userDao: GenericDao<UserDocument>;
+export class AuthImplementation implements AuthInterface{
+    constructor(
+        @InjectModel(User.name) private readonly userModel: Model<UserDocument>
+    ) {}
 
-    constructor() {
-        this.userDao = new GenericDao(User);
-    }
+    async register(userEntity: UserEntity): Promise<UserDocument> {
+        const saltRounds = 10;
 
-    async register(user: UserEntity): Promise<UserDocument> {
-        const userDoc = new User({
-            name: user.name,
-            email: user.email,
-            password: user.password,
-            phone: user.phone,
-        });
+        userEntity.password = await bcrypt.hash(userEntity.password, saltRounds);
 
-        return this.userDao.save(userDoc);
+        const createdUser = new this.userModel(userEntity);
+        return createdUser.save();
     }
 }
