@@ -1,21 +1,23 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { UserEntity } from "../entities/user.entity";
+import { UserDocument } from "../schemas/user.schema";
 
-@Controller('users')
+@Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post()
-  store(@Body() body: { id: string; name: string; email: string; password: string; phone: number }): Promise<UserEntity> {
+  @Post('register')
+  async register(
+      @Body() body: { name: string; email: string; password: string; phone: number }
+  ): Promise<UserDocument> {
     const userEntity = new UserEntity(
-        body.id,
         body.name,
         body.email,
         body.password,
         body.phone
     );
 
-    return this.authService.save(userEntity);
+    return this.authService.register(userEntity);
   }
 }
