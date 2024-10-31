@@ -12,9 +12,7 @@ export class AuthImplementation implements AuthInterface{
 
     async register(userEntity: UserEntity): Promise<UserDocument> {
         const saltRounds = 10;
-
         userEntity.password = await bcrypt.hash(userEntity.password, saltRounds);
-
         const createdUser = new this.userModel(userEntity);
         return createdUser.save();
     }

@@ -17,7 +17,7 @@ export class AuthController {
         body.password,
         body.phone
     );
-
+    
     return this.authService.register(userEntity);
   }
 }
