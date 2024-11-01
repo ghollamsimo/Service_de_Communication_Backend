@@ -10,4 +10,9 @@ export class AuthService {
   async register(user: UserEntity): Promise<UserDocument> {
     return this.authImplementation.register(user);
   }
+
+ async login(user: UserEntity): Promise<{token:string}>{
+
+  return  this.authImplementation.login(user);
+ }
 }

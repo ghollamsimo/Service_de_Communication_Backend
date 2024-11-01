@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from './config.module';
+import { ConfiigModule } from './config.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
-    ConfigModule,
+    ConfiigModule,
+    ConfigModule.forRoot({ isGlobal: true }),
     
   ],
   controllers: [],

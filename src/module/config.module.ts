@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth.module';
@@ -11,4 +12,4 @@ import { AuthModule } from './auth.module';
   providers: [],
   exports: [],
 })
-export class ConfigModule {}
+export class ConfiigModule {}
