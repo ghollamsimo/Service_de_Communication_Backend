@@ -27,4 +27,6 @@ export class Channel extends Document {
   bannedWords: string[];
 }
 
+export type ChannelDocument = Channel & Document;
+
 export const ChannelSchema = SchemaFactory.createForClass(Channel);
