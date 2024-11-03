@@ -15,16 +15,16 @@ export class Channel extends Document {
   ownerId: string;
 
   @Prop([String])
-  members: string[];
+  members?: string[];
 
   @Prop([String])
-  moderators: string[];
+  moderators?: string[];
 
   @Prop({ default: false })
   safeMode: boolean;
 
   @Prop([String])
-  bannedWords: string[];
+  bannedWords?: string[];
 }
 
 export type ChannelDocument = Channel & Document;
