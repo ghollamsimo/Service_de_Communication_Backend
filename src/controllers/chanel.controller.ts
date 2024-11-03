@@ -1,4 +1,6 @@
 import { Body, Controller, Post } from "@nestjs/common";
+import { chanelService } from '../services/chanel.service';
+import { ChannelEntity } from "dist/entities/chanel.entity";
 
 
 
@@ -6,10 +8,21 @@ import { Body, Controller, Post } from "@nestjs/common";
 
 export class  ChanelsController {
 
-    constructor(parameters) {
+    constructor(private readonly chanelService:chanelService) { }
+
+
+    @Post('create')
+    createChanel(@Body()
+    body: {
+      name: string;
+      type: string;
+      ownerId: string;
+     
+    } ){
+     const ChanelEntity = new  ChannelEntity(body.name, body.type, body.ownerId)
         
     }
 
-    
+
 }
 
