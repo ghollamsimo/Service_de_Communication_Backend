@@ -23,13 +23,13 @@ getChanelById(id: string): Promise<ChannelDocument> {
 
 
 createChanel(ChannelEntity: ChannelEntity): Promise<ChannelDocument> {
-    return;
+    return this.ChanelImplementations.createChanel(ChannelEntity);
 }
 
 
-updateChanel(ChannelEntity: ChannelEntity): Promise<ChannelDocument> {
-    return;
-}
+updateChanel(id: string, ChannelEntity: ChannelEntity): Promise<ChannelDocument> {
+    return this.ChanelImplementations.updateChanel(id, ChannelEntity);
+  }
 
 deleteChanel(ChannelEntity: ChannelEntity): Promise<{ msg: string; }> {
     return;
