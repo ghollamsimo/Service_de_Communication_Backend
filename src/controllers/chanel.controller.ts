@@ -1,6 +1,7 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Param, Patch, Post } from "@nestjs/common";
 import { chanelService } from '../services/chanel.service';
-import { ChannelEntity } from "dist/entities/chanel.entity";
+import { ChannelDocument } from "src/schemas/chanel.schema";
+import { ChannelEntity } from "src/entities/chanel.entity";
 
 
 
@@ -14,13 +15,25 @@ export class  ChanelsController {
     @Post('create')
     createChanel(@Body()
     body: {
-      name: string;
-      type: string;
-      ownerId: string;
+      name?: string;
+      type?: string;
+      ownerId?: string;
      
-    } ){
-     const ChanelEntity = new  ChannelEntity(body.name, body.type, body.ownerId)
+    } ): Promise<ChannelDocument>{
+     const ChanelEntity = new  ChannelEntity(body.name, body.type, body.ownerId);
+     return this.chanelService.createChanel(ChanelEntity);
         
+    }
+
+
+    @Patch('update/:id')
+    updateChanel(
+      @Param('id') id: string,
+      @Body() body: { name?: string; type?: string; ownerId?: string; }
+    ): Promise<ChannelDocument> {
+        const ChanelEntity = new  ChannelEntity(body.name, body.type, body.ownerId);
+
+      return this.chanelService.updateChanel(id, ChanelEntity);
     }
 
 
