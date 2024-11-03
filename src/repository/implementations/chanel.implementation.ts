@@ -1,8 +1,8 @@
 import { Channel, ChannelDocument } from 'src/schemas/chanel.schema';
-import { ChanelInetface } from '../../../dist/repository/interfaces/chanel.interface';
-import { ChannelEntity } from 'dist/entities/chanel.entity';
+import { ChannelEntity } from "src/entities/chanel.entity";
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { ChanelInetface } from '../interfaces/chanel.interface';
 
 
 
@@ -21,13 +21,14 @@ export  class ChanelImplementations implements  ChanelInetface{
 
 
     createChanel(ChannelEntity: ChannelEntity): Promise<ChannelDocument> {
-        return;
+        const  createdChanel = new this.chanelModel(ChannelEntity)
+        return createdChanel.save();
     }
 
 
-    updateChanel(ChannelEntity: ChannelEntity): Promise<ChannelDocument> {
-        return;
-    }
+    updateChanel(id: string, ChannelEntity: ChannelEntity): Promise<ChannelDocument> {
+        return this.chanelModel.findByIdAndUpdate(id, ChannelEntity, { new: true }).exec();
+      }
 
     deleteChanel(ChannelEntity: ChannelEntity): Promise<{ msg: string; }> {
         return;
