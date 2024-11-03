@@ -13,10 +13,10 @@ export interface  ChanelInetface {
 
     createChanel(ChannelEntity:ChannelEntity):Promise<ChannelDocument>;
 
-    updateChanel(ChannelEntity:ChannelEntity):Promise<ChannelDocument>;
+    updateChanel(id: string,ChannelEntity:ChannelEntity):Promise<ChannelDocument>;
 
     deleteChanel(ChannelEntity:ChannelEntity):Promise<{msg:string}>; 
    
-    
+
 
 } 
