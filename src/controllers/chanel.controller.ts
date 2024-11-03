@@ -29,12 +29,27 @@ export class  ChanelsController {
     @Patch('update/:id')
     updateChanel(
       @Param('id') id: string,
-      @Body() body: { name?: string; type?: string; ownerId?: string; }
+      @Body() body: { 
+        name?: string; 
+        type?: string; 
+        ownerId?: string;
+        members?: string[];
+        moderators?: string[];
+        bannedWords?: string[];
+      }
     ): Promise<ChannelDocument> {
-        const ChanelEntity = new  ChannelEntity(body.name, body.type, body.ownerId);
-
+      const ChanelEntity = new ChannelEntity(
+        body.name,
+        body.type,
+        body.ownerId,
+        body.members,
+        body.moderators,
+        body.bannedWords
+      );
+    
       return this.chanelService.updateChanel(id, ChanelEntity);
     }
+    
 
 
 }
