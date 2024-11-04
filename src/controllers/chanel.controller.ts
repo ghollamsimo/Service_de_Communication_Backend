@@ -1,7 +1,8 @@
-import { Body, Controller, Param, Patch, Post } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Param, Patch, Post } from "@nestjs/common";
 import { chanelService } from '../services/chanel.service';
 import { ChannelDocument } from "src/schemas/chanel.schema";
 import { ChannelEntity } from "src/entities/chanel.entity";
+import { Types } from "mongoose";
 
 
 
@@ -18,9 +19,28 @@ export class  ChanelsController {
       name?: string;
       type?: string;
       ownerId?: string;
+      members?: string[];
+      moderators?: string[];
+      bannedWords?: string[];
      
     } ): Promise<ChannelDocument>{
-     const ChanelEntity = new  ChannelEntity(body.name, body.type, body.ownerId);
+        if (!Types.ObjectId.isValid(body.ownerId)) {
+            throw new BadRequestException('Invalid ownerId');
+        }
+        if (body.members && !body.members.every(id => Types.ObjectId.isValid(id))) {
+            throw new BadRequestException('Invalid memberId in members');
+        }
+        if (body.moderators && !body.moderators.every(id => Types.ObjectId.isValid(id))) {
+            throw new BadRequestException('Invalid moderatorId in moderators');
+        }
+     const ChanelEntity = new  ChannelEntity(
+        body.name,
+        body.type,
+        body.ownerId,
+        body.members,
+        body.moderators,
+        body.bannedWords
+     );
      return this.chanelService.createChanel(ChanelEntity);
         
     }
@@ -38,6 +58,15 @@ export class  ChanelsController {
         bannedWords?: string[];
       }
     ): Promise<ChannelDocument> {
+        if (body.ownerId && !Types.ObjectId.isValid(body.ownerId)) {
+            throw new BadRequestException('Invalid ownerId');
+        }
+        if (body.members && !body.members.every(id => Types.ObjectId.isValid(id))) {
+            throw new BadRequestException('Invalid memberId in members');
+        }
+        if (body.moderators && !body.moderators.every(id => Types.ObjectId.isValid(id))) {
+            throw new BadRequestException('Invalid moderatorId in moderators');
+        }
       const ChanelEntity = new ChannelEntity(
         body.name,
         body.type,
