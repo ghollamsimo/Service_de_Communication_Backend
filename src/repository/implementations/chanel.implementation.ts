@@ -17,7 +17,7 @@ export  class ChanelImplementations implements  ChanelInetface{
     }
 
     getChanelById(id: string): Promise<ChannelDocument> {
-        return;
+        return this.chanelModel.findById(id).exec()
     }
 
 
