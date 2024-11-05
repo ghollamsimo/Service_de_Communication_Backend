@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Param, Patch, Post } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Param, Patch, Post, Request, UseGuards } from "@nestjs/common";
 import { chanelService } from '../services/chanel.service';
 import { ChannelDocument } from "src/schemas/chanel.schema";
 import { ChannelEntity } from "src/entities/chanel.entity";
@@ -7,24 +7,27 @@ import { Types } from "mongoose";
 
 
 @Controller('chanels')
-
 export class  ChanelsController {
 
     constructor(private readonly chanelService:chanelService) { }
 
 
     @Post('create')
-    createChanel(@Body()
+   
+    
+    createChanel(
+      @Request() req,
+      @Body()
     body: {
       name?: string;
       type?: string;
-      ownerId?: string;
       members?: string[];
       moderators?: string[];
       bannedWords?: string[];
      
     } ): Promise<ChannelDocument>{
-        if (!Types.ObjectId.isValid(body.ownerId)) {
+      const  ownerId = req.user._id;
+        if (!Types.ObjectId.isValid(ownerId)) {
             throw new BadRequestException('Invalid ownerId');
         }
         if (body.members && !body.members.every(id => Types.ObjectId.isValid(id))) {
@@ -36,7 +39,7 @@ export class  ChanelsController {
      const ChanelEntity = new  ChannelEntity(
         body.name,
         body.type,
-        body.ownerId,
+        ownerId,
         body.members,
         body.moderators,
         body.bannedWords
