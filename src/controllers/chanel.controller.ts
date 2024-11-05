@@ -102,10 +102,12 @@ export class  ChanelsController {
 
     @Delete('delete/:id')
    async deleteChanel(
+    @Request() req,
     @Param('id') id: string,
 
    ){
-      return  this.chanelService.deleteChanel(id);
+    const ownerId = req.user._id
+      return  this.chanelService.deleteChanel(id,ownerId);
    }
 
     
