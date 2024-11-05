@@ -40,7 +40,15 @@ export  class ChanelImplementations implements  ChanelInetface{
         return this.chanelModel.findByIdAndUpdate(id, ChannelEntity, { new: true }).exec();
       }
 
-      async deleteChanel(id: string): Promise<{ msg: string }> {
+      async deleteChanel(id: string,ownerId:string): Promise<{ msg: string }> {
+        const channel = await this.chanelModel.findById(id).exec();
+        
+        if (!channel) {
+        throw new NotFoundException('Channel not found');
+                }
+        if (channel.ownerId && channel.ownerId.toString() !== ownerId) {
+            throw new ForbiddenException('You do not have permission to delete this channel');
+        }
         
         const deletedChanel = await this.chanelModel.findByIdAndDelete(id).exec();
         if (!deletedChanel) {
