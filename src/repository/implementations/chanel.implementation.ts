@@ -13,7 +13,7 @@ export  class ChanelImplementations implements  ChanelInetface{
     constructor(@InjectModel(Channel.name) private readonly chanelModel:Model<ChannelDocument> ){}
 
     getAllChanels(): Promise<ChannelDocument[]> {
-        return ;
+        return this.chanelModel.find().exec();
     }
 
     getChanelById(id: string): Promise<ChannelDocument> {
