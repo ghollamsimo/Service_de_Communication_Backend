@@ -3,10 +3,12 @@ import { chanelService } from '../services/chanel.service';
 import { ChannelDocument } from "src/schemas/chanel.schema";
 import { ChannelEntity } from "src/entities/chanel.entity";
 import { Types } from "mongoose";
+import { AuthMidllware } from '../gards/auth.gard';
 
 
 
 @Controller('chanels')
+@UseGuards(AuthMidllware)
 export class  ChanelsController {
 
     constructor(private readonly chanelService:chanelService) { }
