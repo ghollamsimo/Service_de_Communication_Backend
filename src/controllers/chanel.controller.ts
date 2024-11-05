@@ -53,17 +53,20 @@ export class  ChanelsController {
 
     @Patch('update/:id')
     updateChanel(
+      @Request() req,
+
       @Param('id') id: string,
       @Body() body: { 
         name?: string; 
         type?: string; 
-        ownerId?: string;
         members?: string[];
         moderators?: string[];
         bannedWords?: string[];
       }
     ): Promise<ChannelDocument> {
-        if (body.ownerId && !Types.ObjectId.isValid(body.ownerId)) {
+         const  ownerId = req.user._id;
+
+        if (ownerId && !Types.ObjectId.isValid(ownerId)) {
             throw new BadRequestException('Invalid ownerId');
         }
         if (body.members && !body.members.every(id => Types.ObjectId.isValid(id))) {
@@ -75,7 +78,7 @@ export class  ChanelsController {
       const ChanelEntity = new ChannelEntity(
         body.name,
         body.type,
-        body.ownerId,
+        ownerId,
         body.members,
         body.moderators,
         body.bannedWords
