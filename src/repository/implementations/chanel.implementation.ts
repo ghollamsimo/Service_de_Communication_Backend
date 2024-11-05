@@ -40,8 +40,13 @@ export  class ChanelImplementations implements  ChanelInetface{
         return this.chanelModel.findByIdAndUpdate(id, ChannelEntity, { new: true }).exec();
       }
 
-    deleteChanel(ChannelEntity: ChannelEntity): Promise<{ msg: string; }> {
-        return;
+      async deleteChanel(id: string): Promise<{ msg: string }> {
+        
+        const deletedChanel = await this.chanelModel.findByIdAndDelete(id).exec();
+        if (!deletedChanel) {
+            throw new NotFoundException('There is no channel with that id');
+        }
+        return { msg: 'Channel deleted' }; 
     }
 
 }
