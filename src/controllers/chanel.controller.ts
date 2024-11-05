@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Param, Patch, Post, Request, UseGuards } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Get, Param, Patch, Post, Request, UseGuards } from "@nestjs/common";
 import { chanelService } from '../services/chanel.service';
 import { ChannelDocument } from "src/schemas/chanel.schema";
 import { ChannelEntity } from "src/entities/chanel.entity";
@@ -12,6 +12,11 @@ import { AuthMidllware } from '../gards/auth.gard';
 export class  ChanelsController {
 
     constructor(private readonly chanelService:chanelService) { }
+
+    @Get('all')
+    async getAllChanels(): Promise<ChannelDocument[]> {
+      return this.chanelService.getAllChanels();
+    }
 
 
     @Post('create')
