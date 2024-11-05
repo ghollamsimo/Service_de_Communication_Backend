@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from "@nestjs/common";
 import { AuthService } from "../services/auth.service";
 import { UserEntity } from "../entities/user.entity";
-import { UserDocument } from "../schemas/user.schema";
+import { AuthUserResponse } from "src/types/auth.response";
 
 @Controller("auth")
 export class AuthController {
@@ -16,7 +16,7 @@ export class AuthController {
       password: string;
       phone: number;
     }
-  ): Promise<UserDocument> {
+  ): Promise<AuthUserResponse> {
     const userEntity = new UserEntity(
       body.name,
       body.email,
