@@ -15,7 +15,7 @@ export interface  ChanelInetface {
 
     updateChanel(id: string,ChannelEntity:ChannelEntity):Promise<ChannelDocument>;
 
-    deleteChanel(ChannelEntity:ChannelEntity):Promise<{msg:string}>; 
+    deleteChanel(id:string):Promise<{msg:string}>; 
    
 
 
