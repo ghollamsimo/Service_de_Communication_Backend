@@ -3,6 +3,7 @@ import { ChannelEntity } from "src/entities/chanel.entity";
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ChanelInetface } from '../interfaces/chanel.interface';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 
 
 
@@ -26,7 +27,16 @@ export  class ChanelImplementations implements  ChanelInetface{
     }
 
 
-    updateChanel(id: string, ChannelEntity: ChannelEntity): Promise<ChannelDocument> {
+   async updateChanel(id: string, ChannelEntity: ChannelEntity): Promise<ChannelDocument> {
+        const channel = await this.chanelModel.findById(id).exec();
+        
+            if (!channel) {
+            throw new NotFoundException('Channel not found');
+            }
+    if (channel.ownerId.toString() !== ChannelEntity.ownerId) {
+        throw new ForbiddenException('You do not have permission to update this channel');
+      }
+        
         return this.chanelModel.findByIdAndUpdate(id, ChannelEntity, { new: true }).exec();
       }
 
