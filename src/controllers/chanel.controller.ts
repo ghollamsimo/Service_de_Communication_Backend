@@ -18,6 +18,14 @@ export class  ChanelsController {
       return this.chanelService.getAllChanels();
     }
 
+    @Get('chanel/:id')
+    async getChanelById(
+      @Param('id') id: string,
+    ): Promise<ChannelDocument>{
+      return this.chanelService.getChanelById(id);
+
+    }
+
 
     @Post('create')
    

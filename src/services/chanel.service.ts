@@ -19,7 +19,7 @@ getAllChanels(): Promise<ChannelDocument[]> {
 }
 
 getChanelById(id: string): Promise<ChannelDocument> {
-    return;
+    return this.ChanelImplementations.getChanelById(id);
 }
 
 
