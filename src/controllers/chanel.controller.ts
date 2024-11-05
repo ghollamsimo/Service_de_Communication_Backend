@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Param, Patch, Post, Request, UseGuards } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, Request, UseGuards } from "@nestjs/common";
 import { chanelService } from '../services/chanel.service';
 import { ChannelDocument } from "src/schemas/chanel.schema";
 import { ChannelEntity } from "src/entities/chanel.entity";
@@ -99,6 +99,15 @@ export class  ChanelsController {
     
       return this.chanelService.updateChanel(id, ChanelEntity);
     }
+
+    @Delete('delete/:id')
+   async deleteChanel(
+    @Param('id') id: string,
+
+   ){
+      return  this.chanelService.deleteChanel(id);
+   }
+
     
 
 
