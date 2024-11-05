@@ -14,7 +14,8 @@ constructor(
 
 
 getAllChanels(): Promise<ChannelDocument[]> {
-    return ;
+
+    return this.ChanelImplementations.getAllChanels();
 }
 
 getChanelById(id: string): Promise<ChannelDocument> {
