@@ -1,43 +1,46 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User, UserDocument } from '../../schemas/user.schema';
 import { UserEntity } from '../../entities/user.entity';
 import { AuthInterface } from "../interfaces/auth.interface";
-import * as bcrypt from 'bcrypt';
-import { JwtService } from '@nestjs/jwt';
+import axios from 'axios';
+import { AuthUserResponse } from 'src/types/auth.response';
 
 export class AuthImplementation implements AuthInterface {
     constructor(
-        @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-        private readonly jwtService: JwtService,
+       
     ) { }
 
-    async register(userEntity: UserEntity): Promise<UserDocument> {
-        const saltRounds = 10;
-        userEntity.password = await bcrypt.hash(userEntity.password, saltRounds);
-        const createdUser = new this.userModel(userEntity);
-        return createdUser.save();
+    async register(userEntity: UserEntity): Promise<AuthUserResponse> {
+
+        try {
+            const response = await axios.post('http://localhost:3002/auth/register', {
+                email: userEntity.email,
+                password: userEntity.password,
+                name: userEntity.name,
+                phone: userEntity.phone,
+            });
+
+            const createdUser = response.data;
+            return createdUser;
+        } catch (error) {
+            throw new Error('Registration failed');
+        }
     }
 
 
     async login(userEntity: UserEntity): Promise<{  token: string }> {
 
-         
-        const user = await this.userModel.findOne({ email: userEntity.email });
-    if (!user) {
+         try {
+            const response = await axios.post('http://localhost:3002/auth/login', {
+                email: userEntity.email,
+                password: userEntity.password,
+            });
 
-        throw new Error('Invalid credentials');
-      }
-    const isPasswordValid = await bcrypt.compare(userEntity.password, user.password); 
-
-    if (!isPasswordValid) {
-
-        throw new Error('Invalid credentials');
-    }
-       
-    const token = this.jwtService.sign({ id: user._id, email: user.email });
-
-
-   return {token} ;
+            return { token: response.data.token };
+        } catch (error) {
+            throw new Error('Invalid credentials or authentication failed');
+        }
+      
+ 
     }
 }
