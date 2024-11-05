@@ -32,8 +32,8 @@ updateChanel(id: string, ChannelEntity: ChannelEntity): Promise<ChannelDocument>
     return this.ChanelImplementations.updateChanel(id, ChannelEntity);
   }
 
-deleteChanel(id:string): Promise<{ msg: string; }> {
-    return this.ChanelImplementations.deleteChanel(id)
+deleteChanel(id:string,ownerId:string): Promise<{ msg: string; }> {
+    return this.ChanelImplementations.deleteChanel(id,ownerId)
 }
 
 
