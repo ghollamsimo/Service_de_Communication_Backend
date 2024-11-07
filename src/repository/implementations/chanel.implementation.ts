@@ -17,7 +17,7 @@ export  class ChanelImplementations implements  ChanelInetface{
     }
 
     getChanelById(id: string): Promise<ChannelDocument> {
-        return this.chanelModel.findById(id).exec()
+        return this.chanelModel.findById(id).exec();
     }
 
 
@@ -41,6 +41,7 @@ export  class ChanelImplementations implements  ChanelInetface{
       }
 
       async deleteChanel(id: string,ownerId:string): Promise<{ msg: string }> {
+
         const channel = await this.chanelModel.findById(id).exec();
         
         if (!channel) {
@@ -55,6 +56,7 @@ export  class ChanelImplementations implements  ChanelInetface{
             throw new NotFoundException('There is no channel with that id');
         }
         return { msg: 'Channel deleted' }; 
+
     }
 
 }
