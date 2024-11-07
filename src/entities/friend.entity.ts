@@ -10,6 +10,6 @@ export class FriendEntity {
     constructor(
         public readonly requesterId: string,
         public readonly receiverId: string,
-        public readonly status: FriendRequestStatus,
+        public readonly status: FriendRequestStatus = FriendRequestStatus.Pending,
     ) {}
 }
