@@ -4,7 +4,7 @@ import { FriendInterface } from "../interfaces/friend.interface";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import axios from "axios";
-import { NotFoundException, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, NotFoundException, UnauthorizedException } from "@nestjs/common";
 
 
 
@@ -81,6 +81,27 @@ async blockFriendRequest(blockerId: string, id: string): Promise<{ msg: string }
         throw new Error('Failed to block friend request');
     }
 }
+
+async cancelFriendRequest(cancelerId: string, id: string): Promise<{ msg: string }> {
+    const request = await this.FriendMoodel.findById(id);
+
+    if (!request) {
+        throw new NotFoundException('Friend request not found');
+    }
+
+    if (request.requesterId !== cancelerId) {
+        throw new UnauthorizedException('Unauthorized: Only the requester can cancel this request');
+    }
+
+    if (request.status === 'accepted') {
+        throw new BadRequestException('Cannot cancel an accepted friend request. You can only block the friend');
+    }
+
+    await this.FriendMoodel.findByIdAndDelete(id);
+
+    return { msg: 'Friend request canceled successfully' };
+}
+
 
 
 

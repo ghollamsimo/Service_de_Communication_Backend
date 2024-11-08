@@ -8,5 +8,6 @@ export interface FriendInterface{
   createFriendRequest(FriendEntity:FriendEntity):Promise<FriendDocument>;
   acceptFriendRequest(accepterId:string,id:string):Promise<{msg:string}>;
   blockFriendRequest(blockerId:string,id:string):Promise<{msg:string}>;
+  cancelFriendRequest(cancelerId:string,id:string):Promise<{msg:string}>;
 
 }

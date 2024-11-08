@@ -54,4 +54,13 @@ export class FriendController{
        const blockerId = req.user._id;
        return this.FriendService.blockFriend(blockerId, id)
     }
+
+    @Patch('cancel/:id')
+    cancelFriend(
+        @Param('id') id:string,
+        @Request() req,
+    ){
+       const cancelerId = req.user._id;
+       return this.FriendService.cancelFriend(cancelerId, id)
+    }
 }
