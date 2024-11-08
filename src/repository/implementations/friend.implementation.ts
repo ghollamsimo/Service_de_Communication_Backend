@@ -15,7 +15,10 @@ export  class FrienImplementatins implements FriendInterface {
 
 
    createFriendRequest(Friendentity: FriendEntity): Promise<FriendDocument> {
-
+     
+     if (Friendentity.receiverId === Friendentity.requesterId) {
+         throw new UnauthorizedException('you cant send a friend request to your self');
+     }
     const newfriend = new this.FriendMoodel(Friendentity)
        return newfriend.save() ;
    }
@@ -59,8 +62,8 @@ async blockFriendRequest(blockerId: string, id: string): Promise<{ msg: string }
         throw new NotFoundException('Friend request not found');
     }
 
-    if (request.receiverId !== blockerId) {
-        throw new UnauthorizedException('Unauthorized: Only the receiver can block this request');
+    if (request.status === 'Pending') {
+        throw new UnauthorizedException('Unauthorized: Only the accepted request  can be blocked ');
     }
 
     const body = {

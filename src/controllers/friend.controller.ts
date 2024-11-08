@@ -27,7 +27,7 @@ export class FriendController{
     ){
         const  requesterId = req.user._id;
         if (!Types.ObjectId.isValid(body.receiverId)) {
-            throw new BadRequestException('Invalid ownerId');
+            throw new BadRequestException('Invalid reciver id');
         }
         const Friendentity = new  FriendEntity(requesterId, body.receiverId);
         
