@@ -52,5 +52,36 @@ export  class FrienImplementatins implements FriendInterface {
 
 }
 
+async blockFriendRequest(blockerId: string, id: string): Promise<{ msg: string }> {
+    const request = await this.FriendMoodel.findById(id);
+
+    if (!request) {
+        throw new NotFoundException('Friend request not found');
+    }
+
+    if (request.receiverId !== blockerId) {
+        throw new UnauthorizedException('Unauthorized: Only the receiver can block this request');
+    }
+
+    const body = {
+        blockerId: request.receiverId,   
+        blockedId: request.requesterId  
+    };
+
+    try {
+        const response = await axios.patch('http://localhost:3002/auth/remove_friend', body);
+
+        const update = { status: 'blocked' };
+        
+        await this.FriendMoodel.findByIdAndUpdate(request._id, update, { new: true });
+
+        return { msg: response.data.msg };
+        
+    } catch (error) {
+        throw new Error('Failed to block friend request');
+    }
+}
+
+
 
 }
