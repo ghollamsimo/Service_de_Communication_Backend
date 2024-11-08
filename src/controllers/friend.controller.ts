@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Post, Request, UseGuards } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Param, Patch, Post, Request, UseGuards } from "@nestjs/common";
 import { FriendService } from '../services/friend.service';
 import { AuthMidllware } from "src/gards/auth.gard";
 import {  FriendEntity } from '../entities/friend.entity';
@@ -35,5 +35,14 @@ export class FriendController{
 
 
 
+    }
+    @Patch('accept/:id')
+    accepteFriend(
+        @Param('id') id:string,
+        @Request() req,
+    ){
+        const accepterId = req.user._id;
+
+        return this.FriendService.acceptFriendRequest(accepterId, id);
     }
 }
