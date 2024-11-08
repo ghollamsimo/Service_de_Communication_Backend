@@ -105,7 +105,37 @@ async cancelFriendRequest(cancelerId: string, id: string): Promise<{ msg: string
     return { msg: 'Friend request canceled successfully' };
 }
 
+async UnblockFriendRequest(unblockerId: string, id: string): Promise<{ msg: string; }> {
 
+    const request = await this.FriendMoodel.findById(id);
+
+    if (!request) {
+        throw new NotFoundException('Friend request not found');
+    }
+
+    if (request.status !== 'Blocked') {
+        throw new UnauthorizedException('Unauthorized: Only the blocked request  can be unblocked ');
+    }
+
+    const body = {
+        unblockerId: request.receiverId,   
+        unblockedId: request.requesterId  
+    };
+
+    try {
+        const response = await axios.patch('http://localhost:3002/auth/restore_friend', body);
+
+        const update = { status: 'Accepted' };
+        
+        await this.FriendMoodel.findByIdAndUpdate(request._id, update, { new: true });
+
+        return { msg: response.data.msg };
+        
+    } catch (error) {
+        throw new Error('Failed to unblock friend request');
+    }
+
+}
 
 
 }
