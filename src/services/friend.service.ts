@@ -19,5 +19,8 @@ export class FriendService{
     async acceptFriendRequest (accepterId:string,id:string){
         return this.FrienImplementatins.acceptFriendRequest(accepterId, id);
     }
+    async  blockFriend(blockerId:string,id:string){
+        return this.FrienImplementatins.blockFriendRequest(blockerId, id);
+    }
 
 }

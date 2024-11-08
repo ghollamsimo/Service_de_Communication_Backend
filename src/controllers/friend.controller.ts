@@ -45,4 +45,13 @@ export class FriendController{
 
         return this.FriendService.acceptFriendRequest(accepterId, id);
     }
+
+    @Patch('block/:id')
+    blockFriend(
+        @Param('id') id:string,
+        @Request() req,
+    ){
+       const blockerId = req.user._id;
+       return this.FriendService.blockFriend(blockerId, id)
+    }
 }
