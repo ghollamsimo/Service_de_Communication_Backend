@@ -22,5 +22,8 @@ export class FriendService{
     async  blockFriend(blockerId:string,id:string){
         return this.FrienImplementatins.blockFriendRequest(blockerId, id);
     }
+    async cancelFriend(cancelerId:string,id:string){
+      return this.FrienImplementatins.cancelFriendRequest(cancelerId, id)
+    }
 
 }
