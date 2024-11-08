@@ -16,5 +16,8 @@ export class FriendService{
     async createFriendRequest(FriendEntity:FriendEntity):Promise<FriendDocument>{
         return this.FrienImplementatins.createFriendRequest(FriendEntity);
     }
+    async acceptFriendRequest (accepterId:string,id:string){
+        return this.FrienImplementatins.acceptFriendRequest(accepterId, id);
+    }
 
 }
