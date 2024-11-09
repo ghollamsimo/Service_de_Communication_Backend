@@ -11,10 +11,9 @@ export class Channel extends Document {
   @Prop({ required: true })
   type: string;
 
-  @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-  ownerId: mongoose.Schema.Types.ObjectId;
-
-  @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }])
+  @Prop([{ 
+    
+    type: mongoose.Schema.Types.ObjectId}])
   members?:  mongoose.Schema.Types.ObjectId[];
 
   @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }])
