@@ -3,7 +3,6 @@ import { Friend, FriendDocument } from "src/schemas/friend.schema";
 import { FriendInterface } from "../interfaces/friend.interface";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import axios from "axios";
 import { BadRequestException, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { User, UserDocument } from "src/schemas/user.schema";
 
@@ -92,7 +91,7 @@ async cancelFriendRequest(cancelerId: string, id: string): Promise<{ msg: string
         throw new UnauthorizedException('Unauthorized: Only the requester can cancel this request');
     }
 
-    if (request.status === 'accepted') {
+    if (request.status === 'Accepted') {
         throw new BadRequestException('Cannot cancel an accepted friend request. You can only block the friend');
     }
 
@@ -101,37 +100,31 @@ async cancelFriendRequest(cancelerId: string, id: string): Promise<{ msg: string
     return { msg: 'Friend request canceled successfully' };
 }
 
-async UnblockFriendRequest(unblockerId: string, id: string): Promise<{ msg: string; }> {
-
+async UnblockFriendRequest(unblockerId: string, id: string): Promise<{ msg: string }> {
     const request = await this.FriendMoodel.findById(id);
 
     if (!request) {
         throw new NotFoundException('Friend request not found');
     }
 
-    if (request.status !== 'Blocked') {
-        throw new UnauthorizedException('Unauthorized: Only the blocked request  can be unblocked ');
+    if (request.status !== 'blocked') {
+        throw new UnauthorizedException('Only a blocked friend request can be unblocked');
     }
 
-    const body = {
-        unblockerId: request.receiverId,   
-        unblockedId: request.requesterId  
-    };
+    await this.FriendMoodel.findByIdAndUpdate(request._id, { status: 'accepted' }, { new: true });
 
-    try {
-        const response = await axios.patch('http://localhost:3002/auth/restore_friend', body);
+    await this.UserModel.updateOne(
+        { _id: request.receiverId },
+        { $addToSet: { friends: request.requesterId } }
+    );
+    await this.UserModel.updateOne(
+        { _id: request.requesterId },
+        { $addToSet: { friends: request.receiverId } }
+    );
 
-        const update = { status: 'Accepted' };
-        
-        await this.FriendMoodel.findByIdAndUpdate(request._id, update, { new: true });
-
-        return { msg: response.data.msg };
-        
-    } catch (error) {
-        throw new Error('Failed to unblock friend request');
-    }
-
+    return { msg: 'Friend unblocked successfully' };
 }
+
 
 
 }
