@@ -5,12 +5,18 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import axios from "axios";
 import { BadRequestException, NotFoundException, UnauthorizedException } from "@nestjs/common";
+import { User, UserDocument } from "src/schemas/user.schema";
 
 
 
 export  class FrienImplementatins implements FriendInterface {
  
-    constructor(@InjectModel(Friend.name) private readonly FriendMoodel:Model<FriendDocument> ){}
+    constructor(
+        @InjectModel(Friend.name) private readonly FriendMoodel:Model<FriendDocument>,
+        @InjectModel(User.name) private readonly UserModel: Model<UserDocument> 
+
+
+){}
 
 
 
@@ -29,31 +35,25 @@ export  class FrienImplementatins implements FriendInterface {
     if (!request) {
         throw new NotFoundException('Friend request not found');
     }
-   
-    
 
     if (request.receiverId !== accepterId) {
         throw new UnauthorizedException('Unauthorized: Only the receiver can accept this request');
     }
 
-    const body = {
-        accepterId: request.receiverId,
-        acceptedId: request.requesterId
-    };
-      try {
-            const response = await axios.patch('http://localhost:3002/auth/add_friend', body);
-    
-            const update = { status: 'accepted' };
-        
-            await this.FriendMoodel.findByIdAndUpdate(request._id, update, { new: true });
-    
-            return { msg: response.data.msg };
+    await this.FriendMoodel.findByIdAndUpdate(request._id, { status: 'accepted' }, { new: true });
 
-      } catch (error) {
-        
-      }
+    await this.UserModel.updateOne(
+        { _id: request.receiverId },
+        { $addToSet: { friends: request.requesterId } }
+    );
+    await this.UserModel.updateOne(
+        { _id: request.requesterId },
+        { $addToSet: { friends: request.receiverId } }
+    );
 
+    return { msg: 'Friend request accepted successfully' };
 }
+
 
 async blockFriendRequest(blockerId: string, id: string): Promise<{ msg: string }> {
     const request = await this.FriendMoodel.findById(id);
