@@ -62,28 +62,24 @@ async blockFriendRequest(blockerId: string, id: string): Promise<{ msg: string }
         throw new NotFoundException('Friend request not found');
     }
 
-    if (request.status === 'Pending') {
-        throw new UnauthorizedException('Unauthorized: Only the accepted request  can be blocked ');
+    if (request.status !== 'accepted') {
+        throw new UnauthorizedException('Only an accepted friend request can be blocked');
     }
 
-    const body = {
-        blockerId: request.receiverId,   
-        blockedId: request.requesterId  
-    };
+    await this.FriendMoodel.findByIdAndUpdate(request._id, { status: 'blocked' }, { new: true });
 
-    try {
-        const response = await axios.patch('http://localhost:3002/auth/remove_friend', body);
+    await this.UserModel.updateOne(
+        { _id: request.receiverId },
+        { $pull: { friends: request.requesterId } }
+    );
+    await this.UserModel.updateOne(
+        { _id: request.requesterId },
+        { $pull: { friends: request.receiverId } }
+    );
 
-        const update = { status: 'blocked' };
-        
-        await this.FriendMoodel.findByIdAndUpdate(request._id, update, { new: true });
-
-        return { msg: response.data.msg };
-        
-    } catch (error) {
-        throw new Error('Failed to block friend request');
-    }
+    return { msg: 'Friend request blocked successfully' };
 }
+
 
 async cancelFriendRequest(cancelerId: string, id: string): Promise<{ msg: string }> {
     const request = await this.FriendMoodel.findById(id);
