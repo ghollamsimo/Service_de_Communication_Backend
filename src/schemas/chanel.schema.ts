@@ -1,23 +1,27 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
 
-@Schema({ timestamps: true })
+export enum ChannelType {
+  PUBLIC = 'public',
+  PRIVATE = 'private',
+  DM = 'dm', 
+}
 
+@Schema({ timestamps: true })
 export class Channel extends Document {
-    
   @Prop({ required: true })
   name: string;
 
-  @Prop({ required: true })
-  type: string;
+  @Prop({ required: true, enum: ChannelType })
+  type: ChannelType;  
 
-  @Prop([{ 
-    
-    type: mongoose.Schema.Types.ObjectId}])
-  members?:  mongoose.Schema.Types.ObjectId[];
-
-  @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }])
-  moderators?:  mongoose.Schema.Types.ObjectId[];
+  @Prop([
+    {
+      userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      role: { type: String, enum: ['owner', 'moderator', 'member'], default: 'member' },
+    },
+  ])
+  members?: { userId: mongoose.Schema.Types.ObjectId; role: string }[];
 
   @Prop({ default: false })
   safeMode: boolean;
