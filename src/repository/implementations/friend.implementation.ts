@@ -35,7 +35,7 @@ export  class FrienImplementatins implements FriendInterface {
         throw new NotFoundException('Friend request not found');
     }
 
-    if (request.receiverId !== accepterId) {
+    if (request.receiverId !== accepterId.toString()) {
         throw new UnauthorizedException('Unauthorized: Only the receiver can accept this request');
     }
 
@@ -86,8 +86,9 @@ async cancelFriendRequest(cancelerId: string, id: string): Promise<{ msg: string
     if (!request) {
         throw new NotFoundException('Friend request not found');
     }
-
-    if (request.requesterId !== cancelerId) {
+   
+    
+    if (request.requesterId !== cancelerId.toString()) {
         throw new UnauthorizedException('Unauthorized: Only the requester can cancel this request');
     }
 

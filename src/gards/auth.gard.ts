@@ -10,13 +10,16 @@ export class AuthMidllware implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
+
+
     const token = request.headers.authorization?.split(' ')[1];
 
     if (!token) {
       throw new UnauthorizedException('No token provided');
     }
 
-    try {
+    
+   
       const response = await axios.get<{ email: string }>('http://localhost:3002/auth/verify', {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -24,6 +27,7 @@ export class AuthMidllware implements CanActivate {
       });
 
       const email = response.data.email;
+            
       if (!email) {
         throw new UnauthorizedException('Email not found in token');
       }
@@ -36,8 +40,6 @@ export class AuthMidllware implements CanActivate {
       request.user = user;
 
       return true;
-    } catch (error) {
-      throw new UnauthorizedException('Invalid token or user not found');
-    }
+  
   }
 }
