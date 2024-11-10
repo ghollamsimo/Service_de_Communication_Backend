@@ -10,9 +10,6 @@ export class User extends Document {
     email: string;
 
     @Prop({ required: true })
-    password: string;
-
-    @Prop({ required: true })
     phone: number;
 
     @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }])

@@ -33,10 +33,7 @@ export  class ChanelImplementations implements  ChanelInetface{
             if (!channel) {
             throw new NotFoundException('Channel not found');
             }
-    if (channel.ownerId.toString() !== ChannelEntity.ownerId) {
-        throw new ForbiddenException('You do not have permission to update this channel');
-      }
-        
+   
         return this.chanelModel.findByIdAndUpdate(id, ChannelEntity, { new: true }).exec();
       }
 
@@ -47,9 +44,7 @@ export  class ChanelImplementations implements  ChanelInetface{
         if (!channel) {
         throw new NotFoundException('Channel not found');
                 }
-        if (channel.ownerId && channel.ownerId.toString() !== ownerId) {
-            throw new ForbiddenException('You do not have permission to delete this channel');
-        }
+       
         
         const deletedChanel = await this.chanelModel.findByIdAndDelete(id).exec();
         if (!deletedChanel) {
