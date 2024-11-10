@@ -4,6 +4,7 @@ import { AuthService } from '../services/auth.service';
 import { AuthImplementation } from '../repository/implementations/auth.implementation';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserModelSchema } from 'src/schemas/user.schema';
+import { AuthMidllware } from 'src/gards/auth.gard';
 
 @Module({
   imports: [
