@@ -19,8 +19,8 @@ export class AuthMidllware implements CanActivate {
     }
 
     
-   
-      const response = await axios.get<{ email: string }>('http://localhost:3002/auth/verify', {
+   try {
+    const response = await axios.get<{ email: string }>('http://localhost:3002/auth/verify', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -40,6 +40,11 @@ export class AuthMidllware implements CanActivate {
       request.user = user;
 
       return true;
+    
+   } catch (error) {
+    throw new UnauthorizedException('the token is invalid ');
+   }
+    
   
   }
 }
