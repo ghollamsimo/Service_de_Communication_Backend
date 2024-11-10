@@ -18,9 +18,10 @@ export class AuthController {
     }
   ): Promise<AuthUserResponse> {
     const userEntity = new UserEntity(
-      body.name,
+     
       body.email,
       body.password,
+      body.name,
       body.phone
     );
 
