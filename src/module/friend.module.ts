@@ -5,6 +5,7 @@ import { FriendSchema } from 'src/schemas/friend.schema';
 import { FriendService } from "src/services/friend.service";
 import {FrienImplementatins} from "../repository/implementations/friend.implementation"
 import { User, UserModelSchema } from "src/schemas/user.schema";
+import { ChannelSchema } from "src/schemas/chanel.schema";
 
 
 
@@ -12,7 +13,9 @@ import { User, UserModelSchema } from "src/schemas/user.schema";
 
     imports:[
         MongooseModule.forFeature([{ name: 'Friend', schema: FriendSchema }]),
-        MongooseModule.forFeature([{ name: User.name, schema: UserModelSchema }])
+        MongooseModule.forFeature([{ name: User.name, schema: UserModelSchema }]),
+        MongooseModule.forFeature([{ name: 'Channel', schema: ChannelSchema }]),
+
 
 
 
