@@ -1,7 +1,7 @@
 import { Channel, ChannelDocument } from 'src/schemas/chanel.schema';
 import { ChannelEntity } from "src/entities/chanel.entity";
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { ChanelInetface } from '../interfaces/chanel.interface';
 import { NotFoundException } from '@nestjs/common';
 
@@ -35,10 +35,13 @@ export  class ChanelImplementations implements  ChanelInetface{
         }
       
         ChannelEntity.members.forEach((newMember) => {
-            const exists = channel.members.some((existingMember) => existingMember.userId.toString() === newMember.userId);
+            const exists = channel.members.some(
+              (existingMember) => existingMember.userId.toString() === newMember.userId.toString()
+            );
+          
             if (!exists) {
               channel.members.push({
-                userId: new Types.ObjectId(newMember.userId),
+                userId: new mongoose.Schema.Types.ObjectId(newMember.userId) as mongoose.Schema.Types.ObjectId,
                 role: newMember.role,
               });
             }
