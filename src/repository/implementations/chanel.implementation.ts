@@ -1,9 +1,9 @@
 import { Channel, ChannelDocument } from 'src/schemas/chanel.schema';
 import { ChannelEntity } from "src/entities/chanel.entity";
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { ChanelInetface } from '../interfaces/chanel.interface';
-import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 
 
 
@@ -27,15 +27,31 @@ export  class ChanelImplementations implements  ChanelInetface{
     }
 
 
-   async updateChanel(id: string, ChannelEntity: ChannelEntity): Promise<ChannelDocument> {
+    async updateChanel(id: string, ChannelEntity: ChannelEntity): Promise<ChannelDocument> {
         const channel = await this.chanelModel.findById(id).exec();
-        
-            if (!channel) {
-            throw new NotFoundException('Channel not found');
+      
+        if (!channel) {
+          throw new NotFoundException('Channel not found');
+        }
+      
+        ChannelEntity.members.forEach((newMember) => {
+            const exists = channel.members.some((existingMember) => existingMember.userId.toString() === newMember.userId);
+            if (!exists) {
+              channel.members.push({
+                userId: new Types.ObjectId(newMember.userId),
+                role: newMember.role,
+              });
             }
-   
-        return this.chanelModel.findByIdAndUpdate(id, ChannelEntity, { new: true }).exec();
+          });
+          
+       
+
+        return this.chanelModel.findByIdAndUpdate(id, {
+          ...ChannelEntity,
+          members: channel.members
+        }, { new: true }).exec();
       }
+      
 
       async deleteChanel(id: string,ownerId:string): Promise<{ msg: string }> {
 

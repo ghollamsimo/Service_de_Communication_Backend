@@ -8,7 +8,7 @@ export class ChannelEntity {
   constructor(
     public readonly name: string,
     public readonly type: ChannelType,  
-    public readonly members: { userId: string; role: 'owner' | 'moderator' | 'member' }[] = [], 
+    public  members: { userId: string; role: 'owner' | 'moderator' | 'member' }[] = [], 
     public readonly bannedWords?: string[],
     public readonly safeMode: boolean = false
   ) {}
