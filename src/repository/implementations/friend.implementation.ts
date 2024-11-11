@@ -5,6 +5,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { BadRequestException, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { User, UserDocument } from "src/schemas/user.schema";
+import { Channel, ChannelDocument } from '../../schemas/chanel.schema';
 
 
 
@@ -12,7 +13,8 @@ export  class FrienImplementatins implements FriendInterface {
  
     constructor(
         @InjectModel(Friend.name) private readonly FriendMoodel:Model<FriendDocument>,
-        @InjectModel(User.name) private readonly UserModel: Model<UserDocument> 
+        @InjectModel(User.name) private readonly UserModel: Model<UserDocument> ,
+        @InjectModel(Channel.name) private readonly ChannelModel: Model<ChannelDocument> ,
 
 
 ){}
@@ -28,30 +30,41 @@ export  class FrienImplementatins implements FriendInterface {
        return newfriend.save() ;
    }
 
-   async acceptFriendRequest(accepterId: string, id: string): Promise<{ msg: string }> {
+
+
+   async acceptFriendRequest(accepterId: string, id: string): Promise<{ msg: string}> {
     const request = await this.FriendMoodel.findById(id);
-
+  
     if (!request) {
-        throw new NotFoundException('Friend request not found');
+      throw new NotFoundException('Friend request not found');
     }
-
-    if (request.receiverId !== accepterId.toString()) {
-        throw new UnauthorizedException('Unauthorized: Only the receiver can accept this request');
+    
+    if (request.receiverId.toString() !== accepterId.toString()) {
+      throw new UnauthorizedException('Unauthorized: Only the receiver can accept this request');
     }
-
+  
     await this.FriendMoodel.findByIdAndUpdate(request._id, { status: 'accepted' }, { new: true });
-
+  
     await this.UserModel.updateOne(
-        { _id: request.receiverId },
-        { $addToSet: { friends: request.requesterId } }
+      { _id: request.receiverId },
+      { $addToSet: { friends: request.requesterId } }
     );
     await this.UserModel.updateOne(
-        { _id: request.requesterId },
-        { $addToSet: { friends: request.receiverId } }
+      { _id: request.requesterId },
+      { $addToSet: { friends: request.receiverId } }
     );
-
-    return { msg: 'Friend request accepted successfully' };
-}
+  
+    const newChannel = await this.ChannelModel.create({
+        name:"direct message",
+      members: [
+        { userId: request.requesterId, role: 'member' },
+        { userId: request.receiverId, role: 'member' }
+      ],
+      type: 'dm'
+    });
+  
+    return {  msg: 'Friend request accepted successfully, and a new DM channel created' };
+  }
 
 
 async blockFriendRequest(blockerId: string, id: string): Promise<{ msg: string }> {
