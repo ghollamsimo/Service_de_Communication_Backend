@@ -9,8 +9,8 @@ export enum ChannelType {
 
 @Schema({ timestamps: true })
 export class Channel extends Document {
-  @Prop({ required: true })
-  name: string;
+  @Prop({ required: false })
+  name?: string;
 
   @Prop({ required: true, enum: ChannelType })
   type: ChannelType;  

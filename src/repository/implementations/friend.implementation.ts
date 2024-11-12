@@ -15,6 +15,7 @@ export  class FrienImplementatins implements FriendInterface {
         @InjectModel(Friend.name) private readonly FriendModel: Model<FriendDocument>,
         @InjectModel(User.name) private readonly UserModel: Model<UserDocument>,
         @InjectModel(Notification.name) private readonly NotificationModel: Model<NotificationDocument>,
+        @InjectModel(Channel.name) private readonly ChannelModel: Model<ChannelDocument>
     ) { }
     UnblockFriendRequest(unblockerId: string, id: string): Promise<{ msg: string; }> {
         throw new Error("Method not implemented.");
@@ -33,10 +34,9 @@ export  class FrienImplementatins implements FriendInterface {
             senderId: FriendEntity.requesterId,
             receiverId: FriendEntity.receiverId,
         });
-
+        
         return newFriend.save();
     }
-
     async acceptFriendRequest(accepterId: string, id: string): Promise<{ msg: string }> {
         const request = await this.FriendModel.findById(id);
 
@@ -44,15 +44,20 @@ export  class FrienImplementatins implements FriendInterface {
             throw new NotFoundException('Friend request not found');
         }
 
-        if (request.receiverId !== accepterId.toString()) {
+        if (request.receiverId.toString() !== accepterId.toString()) {
             throw new UnauthorizedException('Unauthorized: Only the receiver can accept this request');
         }
 
-        await this.FriendModel.findByIdAndUpdate(
-            request._id,
-            { status: 'accepted' },
-            { new: true }
-        );
+        request.status = 'accepted';
+        await request.save();
+        await this.ChannelModel.create({
+            type: 'dm',
+            members: [
+                { userId: request.requesterId, role: 'member' },
+                { userId: request.receiverId, role: 'member' }
+            ],
+            safeMode: false,
+        });
 
         await this.UserModel.updateOne(
             { _id: request.receiverId },
@@ -72,7 +77,6 @@ export  class FrienImplementatins implements FriendInterface {
 
         return { msg: 'Friend request accepted successfully' };
     }
-
     async blockFriendRequest(blockerId: string, id: string): Promise<{ msg: string }> {
         const request = await this.FriendModel.findById(id);
 
