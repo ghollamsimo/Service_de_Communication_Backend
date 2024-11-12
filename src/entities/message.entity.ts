@@ -4,7 +4,7 @@ enum StatusMessage{
     Failed = 'faild',
 }
 
-export class MessgaeEntity {
+export class MessageEntity {
     constructor(
         private readonly senderId: string,
         private readonly chanelId: string,
