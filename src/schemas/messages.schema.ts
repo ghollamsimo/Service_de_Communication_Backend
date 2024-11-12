@@ -27,4 +27,7 @@ export class Message extends Document {
   @Prop({ type: String, enum: Status, default: Status.Sent })
   status: Status;
 }
+
+export type MessageDocument = Message & Document;
+
 export const MessageSchema = SchemaFactory.createForClass(Message);
