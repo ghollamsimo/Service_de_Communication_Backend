@@ -7,11 +7,11 @@ import { Model } from 'mongoose';
 export class MessageImplementation implements MessageInterface{
     constructor(@InjectModel(Message.name) private readonly MessageModel: Model<MessageDocument>) { }
     
-    create(messageEntity: MessageEntity): Promise<MessageDocument> {
-        throw new Error('Method not implemented.');
+    async create(messageEntity: MessageEntity): Promise<MessageDocument> {
+        const message = await new this.MessageModel(messageEntity)
+        return message.save()
     }
-    delete(id: string): Promise<void> {
-        throw new Error('Method not implemented.');
+    async delete(id: string): Promise<void> {
+        await this.MessageModel.findByIdAndDelete(id).exec();
     }
-
 }
