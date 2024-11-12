@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { AuthImplementation } from '../repository/implementations/auth.implementation';
-import { UserEntity } from '../entities/user.entity';
-import { AuthUserResponse } from 'src/types/auth.response';
+import { Injectable } from "@nestjs/common";
+import { AuthImplementation } from "../repository/implementations/auth.implementation";
+import { UserEntity } from "../entities/user.entity";
+import { AuthUserResponse } from "src/types/auth.response";
 
 @Injectable()
 export class AuthService {
@@ -11,8 +11,7 @@ export class AuthService {
     return this.authImplementation.register(user);
   }
 
- async login(user: UserEntity): Promise<{token:string}>{
-
-  return  this.authImplementation.login(user);
- }
+  async login(user: UserEntity): Promise<{ token: string }> {
+    return this.authImplementation.login(user);
+  }
 }

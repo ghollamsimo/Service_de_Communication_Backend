@@ -1,6 +1,6 @@
- export type AuthUserResponse = {
-    id: string; 
-    email: string;
-    name?: string;
-    phone?: number;
+export type AuthUserResponse = {
+  id: string;
+  email: string;
+  name?: string;
+  phone?: number;
 };

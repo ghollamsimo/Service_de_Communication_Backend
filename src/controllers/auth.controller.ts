@@ -15,14 +15,13 @@ export class AuthController {
       email: string;
       password: string;
       phone: number;
-    }
+    },
   ): Promise<AuthUserResponse> {
     const userEntity = new UserEntity(
-     
       body.email,
       body.password,
       body.name,
-      body.phone
+      body.phone,
     );
 
     return this.authService.register(userEntity);
@@ -30,11 +29,9 @@ export class AuthController {
 
   @Post("login")
   async login(
-    @Body() body: { email: string; password: string }
-  ): Promise<{token:string}> {
+    @Body() body: { email: string; password: string },
+  ): Promise<{ token: string }> {
     const userEntity = new UserEntity(body.email, body.password);
-    return this.authService.login(userEntity)
+    return this.authService.login(userEntity);
   }
-
-  
 }

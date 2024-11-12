@@ -1,5 +1,5 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document } from "mongoose";
 
 @Schema({ timestamps: true })
 export class Friend extends Document {
@@ -9,7 +9,7 @@ export class Friend extends Document {
   @Prop({ required: true })
   receiverId: string;
 
-  @Prop({ default: 'pending' })
+  @Prop({ default: "pending" })
   status: string;
 }
 export type FriendDocument = Friend & Document;

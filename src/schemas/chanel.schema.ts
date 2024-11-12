@@ -1,23 +1,23 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Document } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import mongoose, { Document } from "mongoose";
 
 @Schema({ timestamps: true })
-
 export class Channel extends Document {
-    
   @Prop({ required: true })
   name: string;
 
   @Prop({ required: true })
   type: string;
 
-  @Prop([{ 
-    
-    type: mongoose.Schema.Types.ObjectId}])
-  members?:  mongoose.Schema.Types.ObjectId[];
+  @Prop([
+    {
+      type: mongoose.Schema.Types.ObjectId,
+    },
+  ])
+  members?: mongoose.Schema.Types.ObjectId[];
 
-  @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }])
-  moderators?:  mongoose.Schema.Types.ObjectId[];
+  @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: "User" }])
+  moderators?: mongoose.Schema.Types.ObjectId[];
 
   @Prop({ default: false })
   safeMode: boolean;
