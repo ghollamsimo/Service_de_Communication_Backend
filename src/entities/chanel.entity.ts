@@ -14,8 +14,8 @@ export class ChannelEntity {
     public readonly name: string,
     public readonly type: ChannelType,
     public members: { userId: string; role: 'owner' | 'moderator' | 'member' }[] = [],
+    public readonly bannedWords?: string[],
     public readonly safeMode: boolean = false,
     public status: ChannelStatus = ChannelStatus.PUBLIC,
-    public readonly bannedWords?: string[],
   ) { }
 }
