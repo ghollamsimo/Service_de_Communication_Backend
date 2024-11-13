@@ -7,9 +7,8 @@ enum StatusMessage{
 export class MessageEntity {
     constructor(
         private readonly senderId: string,
-        private readonly chanelId: string,
+        private readonly channelId: string,
         private readonly content: string,
-        private readonly type: string,
-        private readonly status: StatusMessage
+        private readonly status: StatusMessage = StatusMessage.Sent
     ){}
 }
