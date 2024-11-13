@@ -1,12 +1,26 @@
-import { Body, Controller, Post, Req } from "@nestjs/common";
+import { Body, Controller, Param, Post, Req, UnauthorizedException, UseGuards } from "@nestjs/common";
+import { AuthMidllware } from "src/gards/auth.gard";
 import { MessageService } from "src/services/message.service";
+import {  MessageEntity } from '../entities/message.entity';
 
 @Controller('message')
-class MessageController{
+@UseGuards(AuthMidllware)
+
+export class MessageController{
     constructor(private readonly MessageService: MessageService) { }
     
-    @Post()
-    async create(@Body() body: { senderId: string, receiverId: string, content: string, type: 'sent', }, @Req() req) {
+    @Post('send/:channelId')
+    async create(@Body() body: {  content: string, }, @Req() req , @Param('channelId') channelId) {
         
+        const senderId = req.user._id;
+       
+        const Messageentity = new MessageEntity(
+            senderId,
+            channelId,
+            body.content
+        );
+     
+  
+        return this.MessageService.creat(Messageentity);
     }
 }
