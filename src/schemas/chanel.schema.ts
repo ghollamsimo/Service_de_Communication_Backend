@@ -4,7 +4,7 @@ import mongoose, { Document } from 'mongoose';
 export enum ChannelType {
   PUBLIC = 'public',
   PRIVATE = 'private',
-  DM = 'dm', 
+  DM = 'dm',
 }
 
 @Schema({ timestamps: true })
@@ -13,7 +13,7 @@ export class Channel extends Document {
   name?: string;
 
   @Prop({ required: true, enum: ChannelType })
-  type: ChannelType;  
+  type: ChannelType;
 
   @Prop([
     {
@@ -29,10 +29,9 @@ export class Channel extends Document {
   @Prop([String])
   bannedWords?: string[];
 
-  @Prop({ default: 'public' })
+  @Prop({ type: String, enum: ['public', 'Archived'], default: 'public' })
   status: string;
 }
 
 export type ChannelDocument = Channel & Document;
-
 export const ChannelSchema = SchemaFactory.createForClass(Channel);
