@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth.module';
 import { ChannelModule } from './chanel.module';
 import { FriendModule } from './friend.module';
+import { MessagesModule } from './messages.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { FriendModule } from './friend.module';
     AuthModule,
     ChannelModule,
     FriendModule,
+    MessagesModule
   ],
   controllers: [],
   providers: [],
