@@ -9,10 +9,8 @@ export class MessageImplementation implements MessageInterface{
     constructor(@InjectModel(Message.name) private readonly MessageModel: Model<MessageDocument>) { }
     
     async create(messageEntity: MessageEntity): Promise<MessageDocument> {
-        console.log(messageEntity);
         
         const message =  new this.MessageModel(messageEntity)
-        console.log(message);
         
         return message.save()
     }
