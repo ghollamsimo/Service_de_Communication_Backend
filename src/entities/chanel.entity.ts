@@ -4,13 +4,18 @@ export enum ChannelType {
   DM = 'dm',
 }
 
+export enum ChannelStatus {
+  PUBLIC = 'public',
+  ARCHIVED = 'archived'
+}
+
 export class ChannelEntity {
   constructor(
     public readonly name: string,
-    public readonly type: ChannelType,  
-    public  members: { userId: string; role: 'owner' | 'moderator' | 'member' }[] = [], 
-    public readonly bannedWords?: string[],
+    public readonly type: ChannelType,
+    public members: { userId: string; role: 'owner' | 'moderator' | 'member' }[] = [],
     public readonly safeMode: boolean = false,
-    public readonly status: string = 'public',
-  ) {}
+    public status: ChannelStatus = ChannelStatus.PUBLIC,
+    public readonly bannedWords?: string[],
+  ) { }
 }
