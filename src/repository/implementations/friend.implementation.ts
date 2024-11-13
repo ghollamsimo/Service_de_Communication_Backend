@@ -90,18 +90,24 @@ export  class FrienImplementatins implements FriendInterface {
 
         await this.FriendModel.findByIdAndUpdate(request._id, { status: 'blocked' }, { new: true });
 
-        if (request.status = 'blocked') {
+        const channel = await this.ChannelModel.findOne({
+            type: 'dm',
+            members: {
+                $all: [
+                    { $elemMatch: { userId: request.requesterId, role: 'member' } },
+                    { $elemMatch: { userId: request.receiverId, role: 'member' } }
+                ]
+            },
+            safeMode: false
+        });
+
+        if (channel) {
             await this.ChannelModel.updateOne(
-                {
-                    type: 'dm',
-                    members: [
-                        { userId: request.requesterId, role: 'member' },
-                        { userId: request.receiverId, role: 'member' }
-                    ],
-                    safeMode: false
-                },
+                { _id: channel._id },
                 { $set: { status: 'Archived' } }
             );
+        } else {
+            console.log("Channel not found for update.");
         }
 
         await this.UserModel.updateOne(
@@ -115,6 +121,7 @@ export  class FrienImplementatins implements FriendInterface {
 
         return { msg: 'Friend request blocked successfully' };
     }
+
 
     async cancelFriendRequest(cancelerId: string, id: string): Promise<{ msg: string }> {
         const request = await this.FriendModel.findById(id);
