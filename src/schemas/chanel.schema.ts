@@ -28,6 +28,9 @@ export class Channel extends Document {
 
   @Prop([String])
   bannedWords?: string[];
+
+  @Prop({ default: 'public' })
+  status: string;
 }
 
 export type ChannelDocument = Channel & Document;
