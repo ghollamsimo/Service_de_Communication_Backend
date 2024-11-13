@@ -90,6 +90,20 @@ export  class FrienImplementatins implements FriendInterface {
 
         await this.FriendModel.findByIdAndUpdate(request._id, { status: 'blocked' }, { new: true });
 
+        if (request.status = 'blocked') {
+            await this.ChannelModel.updateOne(
+                {
+                    type: 'dm',
+                    members: [
+                        { userId: request.requesterId, role: 'member' },
+                        { userId: request.receiverId, role: 'member' }
+                    ],
+                    safeMode: false
+                },
+                { $set: { status: 'Archived' } }
+            );
+        }
+
         await this.UserModel.updateOne(
             { _id: request.receiverId },
             { $pull: { friends: request.requesterId } }
