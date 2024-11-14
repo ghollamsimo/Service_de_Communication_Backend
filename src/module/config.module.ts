@@ -5,6 +5,8 @@ import { AuthModule } from './auth.module';
 import { ChannelModule } from './chanel.module';
 import { FriendModule } from './friend.module';
 import { MessagesModule } from './messages.module';
+import { WebRtcGateway } from 'src/gateways/webrtc.gateway';
+import { GatWaymodule } from './gatway.module';
 
 @Module({
   imports: [
@@ -13,7 +15,8 @@ import { MessagesModule } from './messages.module';
     AuthModule,
     ChannelModule,
     FriendModule,
-    MessagesModule
+    MessagesModule,
+    GatWaymodule
   ],
   controllers: [],
   providers: [],
