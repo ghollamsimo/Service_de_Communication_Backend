@@ -18,6 +18,7 @@ export class WebRtcGateway implements OnModuleInit {
   server: Server;
 
   private connectedUsers = new Map<string, string>();
+  private activeCalls = new Map<string, {acceptorId:string,initiatorId:string}>();
 
   onModuleInit() {
     this.server.on('connection', async (socket: Socket) => {
@@ -69,6 +70,7 @@ export class WebRtcGateway implements OnModuleInit {
     if (!channel) {
       throw new Error('Channel not found');
     }
+
   
   
     const usersInChannel = channel.members || [];
@@ -102,8 +104,100 @@ export class WebRtcGateway implements OnModuleInit {
         }
             });
   }
-  
 
+
+
+
+
+
+
+  
+  @SubscribeMessage('videoOffer')
+  async handleVideoOffer(@MessageBody() body: any, @ConnectedSocket() client: Socket) {
+    const userId = this.connectedUsers.get(client.id);
+    if (!userId) {
+      throw new UnauthorizedException('User not authenticated');
+    }
+  
+    const { channelId } = body;
+  
+    const channel = await this.chanelModel.findById(channelId).exec();
+    if (!channel) {
+      throw new Error('Channel not found');
+    }
+  
+    const usersInChannel = channel.members || [];
+    const connectedUsersInChannel = usersInChannel.filter(member => {
+      const memberUserId = member.userId.toString();
+      const socketId = Array.from(this.connectedUsers.entries()).find(
+        ([_, userId]) => userId === memberUserId
+      )?.[0];
+      return socketId !== undefined && socketId !== client.id;
+    });
+  
+    connectedUsersInChannel.forEach(member => {
+      const socketId = [...this.connectedUsers.entries()]
+        .find(([socketId, userId]) => userId === member.userId.toString());
+  
+      if (socketId) {
+        const userSocket = this.server.sockets.sockets.get(socketId[0]);
+        if (userSocket) {
+          userSocket.emit('incomingCall', {
+            fromUserId: userId,
+            channelId,
+          });
+        }
+      }
+    });
+  }
+  @SubscribeMessage('acceptCall')
+  async handleAcceptCall(@MessageBody() body: any, @ConnectedSocket() client: Socket) {
+    const userId = this.connectedUsers.get(client.id);
+    console.log('Connected Users:', Array.from(this.connectedUsers.entries()));
+    console.log('Current User ID:', userId);
+  
+    if (!userId) {
+      throw new UnauthorizedException('User not authenticated');
+    }
+  
+    const { fromUserId, channelId } = body;
+  
+    // Find the socket ID of the initiator
+    const socketEntry = [...this.connectedUsers.entries()].find(
+      ([, id]) => id === fromUserId.toString()
+    );
+    if (!socketEntry) {
+      console.error(`Socket ID not found for initiator userId: ${fromUserId}`);
+      return;
+    }
+  
+    const [initiatorSocketId] = socketEntry;
+    const initiatorSocket = this.server.sockets.sockets.get(initiatorSocketId);
+  
+    if (!initiatorSocket) {
+      console.error(`Socket not found for initiator with socket ID: ${initiatorSocketId}`);
+      return;
+    }
+  
+    // Notify the initiator about the accepted call
+    initiatorSocket.emit('callAccepted', {
+      toUserId: userId,
+      channelId,
+    });
+  
+    this.activeCalls.set(channelId, {
+      acceptorId: userId.toString(),
+      initiatorId: fromUserId.toString(),
+    });
+    console.log('Active Calls Map:', Array.from(this.activeCalls.entries()));
+  
+    // Notify the acceptor
+    client.emit('callAccepted', {
+      toUserId: fromUserId,
+      channelId,
+    });
+  }
+  
 
 
 }
