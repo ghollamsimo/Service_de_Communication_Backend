@@ -50,7 +50,17 @@ export  class FrienImplementatins implements FriendInterface {
 
         request.status = 'accepted';
         await request.save();
+
+        const receiver = await this.UserModel.findById(request.receiverId).select('name');
+        const requester = await this.UserModel.findById(request.requesterId).select('name');
+
+        if (!receiver || !requester) {
+            throw new NotFoundException('One of the users not found');
+        }
+
+        const channelName = `${receiver.name}-${requester.name}`;
         await this.ChannelModel.create({
+            name: channelName,
             type: 'dm',
             members: [
                 { userId: request.requesterId, role: 'member' },
@@ -70,13 +80,14 @@ export  class FrienImplementatins implements FriendInterface {
 
         await this.NotificationModel.create({
             type: 'friend_request',
-            content: `${request.receiverId} has accepted your friend request.`,
+            content: `${receiver.name} has accepted your friend request.`,
             senderId: request.receiverId,
             receiverId: request.requesterId,
         });
 
         return { msg: 'Friend request accepted successfully' };
     }
+
     async blockFriendRequest(blockerId: string, id: string): Promise<{ msg: string }> {
         const request = await this.FriendModel.findById(id);
 
