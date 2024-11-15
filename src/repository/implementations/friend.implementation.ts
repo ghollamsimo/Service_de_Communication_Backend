@@ -25,13 +25,14 @@ export  class FrienImplementatins implements FriendInterface {
         if (FriendEntity.receiverId === FriendEntity.requesterId) {
             throw new UnauthorizedException("You can't send a friend request to yourself");
         }
+    const exist =this.FriendModel.findOne({})
 
         const newFriend = new this.FriendModel(FriendEntity);
 
         await this.NotificationModel.create({
             type: 'friend_request',
             content: `${FriendEntity.requesterId} sent a friend request.`,
-            senderId: FriendEntity.requesterId,
+            senderId: FriendEntity.requesterId, 
             receiverId: FriendEntity.receiverId,
         });
         
