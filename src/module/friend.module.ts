@@ -7,6 +7,8 @@ import {FrienImplementatins} from "../repository/implementations/friend.implemen
 import { User, UserModelSchema } from "src/schemas/user.schema";
 import { ChannelSchema } from "src/schemas/chanel.schema";
 import { NotificationModule } from "./notification.module";
+import { WebSocketModule } from "./websocket.module";
+import { WebSocketService } from "src/services/websocket.service";
 
 
 
@@ -17,9 +19,10 @@ import { NotificationModule } from "./notification.module";
         MongooseModule.forFeature([{ name: User.name, schema: UserModelSchema }]),
         MongooseModule.forFeature([{ name: 'Channel', schema: ChannelSchema }]),
         NotificationModule,
+        WebSocketModule
     ],
     controllers:[FriendController],
-    providers:[FriendService,FrienImplementatins],
+    providers:[FriendService,FrienImplementatins, WebSocketService],
 
 }
 )
