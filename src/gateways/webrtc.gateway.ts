@@ -162,7 +162,6 @@ export class WebRtcGateway implements OnModuleInit {
   
     const { fromUserId, channelId } = body;
   
-    // Find the socket ID of the initiator
     const socketEntry = [...this.connectedUsers.entries()].find(
       ([, id]) => id === fromUserId.toString()
     );
@@ -179,7 +178,6 @@ export class WebRtcGateway implements OnModuleInit {
       return;
     }
   
-    // Notify the initiator about the accepted call
     initiatorSocket.emit('callAccepted', {
       toUserId: userId,
       channelId,
@@ -191,7 +189,6 @@ export class WebRtcGateway implements OnModuleInit {
     });
     console.log('Active Calls Map:', Array.from(this.activeCalls.entries()));
   
-    // Notify the acceptor
     client.emit('callAccepted', {
       toUserId: fromUserId,
       channelId,
