@@ -189,4 +189,14 @@ export  class FrienImplementatins implements FriendInterface {
 
         return { msg: 'Friend unblocked successfully' };
     }
+
+    async getmyfriends(id:string): Promise<FriendDocument[]> {
+        return this.FriendModel.find({
+            $or: [
+                { receiverId: id },
+                { requester: id }
+            ]
+        });  
+      }
+
 }
