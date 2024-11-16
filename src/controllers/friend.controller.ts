@@ -2,6 +2,7 @@ import {
     BadRequestException,
     Body,
     Controller,
+    Get,
     Param,
     Patch,
     Post,
@@ -17,6 +18,11 @@ import { Types } from "mongoose";
 @UseGuards(AuthMidllware)
 export class FriendController {
     constructor(private readonly FriendService: FriendService) { }
+
+    @Get('myfriends')
+    async getmyfriends(  @Request() req){
+        
+    }
 
     @Post("send")
     createFriendRequest(
