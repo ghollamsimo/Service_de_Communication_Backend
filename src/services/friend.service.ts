@@ -30,4 +30,9 @@ export class FriendService{
         return this.FrienImplementatins.UnblockFriendRequest(unblockerId, id)
       }
 
+      async getmyfriends(id:string):Promise<FriendDocument[]>{
+       
+        return this.FrienImplementatins.getmyfriends(id)
+      }
+
 }
