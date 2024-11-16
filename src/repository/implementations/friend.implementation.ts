@@ -7,12 +7,13 @@ import { BadRequestException, NotFoundException, UnauthorizedException } from "@
 import { User, UserDocument } from "src/schemas/user.schema";
 import { Channel, ChannelDocument } from '../../schemas/chanel.schema';
 import { Notification, NotificationDocument } from '../../schemas/notification.schema';
-
+import { WebSocketService } from "src/services/websocket.service";
 
 
 export  class FrienImplementatins implements FriendInterface {
     constructor(
         @InjectModel(Friend.name) private readonly FriendModel: Model<FriendDocument>,
+        private readonly WebSocketService: WebSocketService,
         @InjectModel(User.name) private readonly UserModel: Model<UserDocument>,
         @InjectModel(Notification.name) private readonly NotificationModel: Model<NotificationDocument>,
         @InjectModel(Channel.name) private readonly ChannelModel: Model<ChannelDocument>
@@ -28,13 +29,20 @@ export  class FrienImplementatins implements FriendInterface {
 
         const newFriend = new this.FriendModel(FriendEntity);
 
-        await this.NotificationModel.create({
+        const requester = await this.UserModel.findById(FriendEntity.requesterId).select('name');
+        if (!requester) {
+            throw new NotFoundException('Requester not found');
+        }
+
+        const notification = await this.NotificationModel.create({
             type: 'friend_request',
-            content: `${FriendEntity.requesterId} sent a friend request.`,
+            content: `${requester.name} sent you a friend request.`,
             senderId: FriendEntity.requesterId,
             receiverId: FriendEntity.receiverId,
         });
-        
+
+        this.WebSocketService.emitToUser(FriendEntity.receiverId, 'friend_request', notification);
+
         return newFriend.save();
     }
     async acceptFriendRequest(accepterId: string, id: string): Promise<{ msg: string }> {
@@ -67,6 +75,8 @@ export  class FrienImplementatins implements FriendInterface {
                 { userId: request.receiverId, role: 'member' }
             ],
             safeMode: false,
+
+        
         });
 
         await this.UserModel.updateOne(
@@ -87,7 +97,6 @@ export  class FrienImplementatins implements FriendInterface {
 
         return { msg: 'Friend request accepted successfully' };
     }
-
     async blockFriendRequest(blockerId: string, id: string): Promise<{ msg: string }> {
         const request = await this.FriendModel.findById(id);
 
