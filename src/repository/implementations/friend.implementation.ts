@@ -3,14 +3,14 @@ import { Friend, FriendDocument } from "src/schemas/friend.schema";
 import { FriendInterface } from "../interfaces/friend.interface";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { BadRequestException, NotFoundException, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, ConflictException, InternalServerErrorException, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { User, UserDocument } from "src/schemas/user.schema";
 import { Channel, ChannelDocument } from '../../schemas/chanel.schema';
 import { Notification, NotificationDocument } from '../../schemas/notification.schema';
 import { WebSocketService } from "src/services/websocket.service";
 
 
-export  class FrienImplementatins implements FriendInterface {
+export class FrienImplementatins implements FriendInterface {
     constructor(
         @InjectModel(Friend.name) private readonly FriendModel: Model<FriendDocument>,
         private readonly WebSocketService: WebSocketService,
@@ -23,30 +23,58 @@ export  class FrienImplementatins implements FriendInterface {
     }
 
     async createFriendRequest(FriendEntity: FriendEntity): Promise<FriendDocument> {
+        // Prevent self-friend requests
         if (FriendEntity.receiverId === FriendEntity.requesterId) {
             throw new UnauthorizedException("You can't send a friend request to yourself");
         }
-    const exist =this.FriendModel.findOne({})
 
-        const newFriend = new this.FriendModel(FriendEntity);
+        // Check if a friend request already exists between these users
+        const exist = await this.FriendModel.findOne({
+            $or: [
+                { requesterId: FriendEntity.requesterId, receiverId: FriendEntity.receiverId },
+                { requesterId: FriendEntity.receiverId, receiverId: FriendEntity.requesterId },
+            ],
+        });
 
+        if (exist) {
+            throw new ConflictException('Friend request already exists');
+        }
+
+        // Fetch the requester details
         const requester = await this.UserModel.findById(FriendEntity.requesterId).select('name');
         if (!requester) {
             throw new NotFoundException('Requester not found');
         }
 
-        const notification = await this.NotificationModel.create({
-            type: 'friend_request',
-            content: `${requester.name} sent you a friend request.`,
-            senderId: FriendEntity.requesterId,
-
+        // Create the friend request
+        const newFriend = new this.FriendModel({
+            requesterId: FriendEntity.requesterId,
             receiverId: FriendEntity.receiverId,
+            status: 'pending', // Ensure status is always set to 'pending' for new requests
         });
 
-        this.WebSocketService.emitToUser(FriendEntity.receiverId, 'friend_request', notification);
+        try {
+            // Save the new friend request
+            const savedFriend = await newFriend.save();
 
-        return newFriend.save();
+            // Create a notification for the receiver
+            const notification = await this.NotificationModel.create({
+                type: 'friend_request',
+                content: `${requester.name} sent you a friend request.`,
+                senderId: FriendEntity.requesterId,
+                receiverId: FriendEntity.receiverId,
+            });
+
+            // Emit a WebSocket event to notify the receiver
+            this.WebSocketService.emitToUser(FriendEntity.receiverId, 'friend_request', notification);
+
+            return savedFriend;
+        } catch (error) {
+            console.error('Error saving friend request:', error);
+            throw new InternalServerErrorException('Failed to save friend request');
+        }
     }
+
     async acceptFriendRequest(accepterId: string, id: string): Promise<{ msg: string }> {
         const request = await this.FriendModel.findById(id);
 
@@ -78,7 +106,7 @@ export  class FrienImplementatins implements FriendInterface {
             ],
             safeMode: false,
 
-        
+
         });
 
         await this.UserModel.updateOne(
@@ -190,18 +218,18 @@ export  class FrienImplementatins implements FriendInterface {
         return { msg: 'Friend unblocked successfully' };
     }
 
-    async getmyfriends(id:string): Promise<FriendDocument[]> {
+    async getmyfriends(id: string): Promise<FriendDocument[]> {        
         return this.FriendModel.find({
             $and: [
                 { status: "accepted" },
                 {
                     $or: [
-                        { receiverId: id }, 
-                        { requester: id }  
+                        { receiverId: id },
+                        { requester: id }
                     ]
                 }
             ]
-        });  
-      }
+        }).populate('requesterId', 'name');
+    }
 
 }
