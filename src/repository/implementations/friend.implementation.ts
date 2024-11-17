@@ -192,9 +192,14 @@ export  class FrienImplementatins implements FriendInterface {
 
     async getmyfriends(id:string): Promise<FriendDocument[]> {
         return this.FriendModel.find({
-            $or: [
-                { receiverId: id },
-                { requester: id }
+            $and: [
+                { status: "accepted" },
+                {
+                    $or: [
+                        { receiverId: id }, 
+                        { requester: id }  
+                    ]
+                }
             ]
         });  
       }
