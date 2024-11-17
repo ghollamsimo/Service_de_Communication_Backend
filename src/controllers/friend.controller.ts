@@ -21,7 +21,8 @@ export class FriendController {
 
     @Get('myfriends')
     async getmyfriends(  @Request() req){
-        
+        const id = req.user._id;
+        return this.FriendService.getmyfriends(id);
     }
 
     @Post("send")
