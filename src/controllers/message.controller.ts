@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, Req, UnauthorizedException, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Req, UnauthorizedException, UseGuards } from "@nestjs/common";
 import { AuthMidllware } from "src/gards/auth.gard";
 import { MessageService } from "src/services/message.service";
 import {  MessageEntity } from '../entities/message.entity';
@@ -22,5 +22,11 @@ export class MessageController{
      
   
         return this.MessageService.creat(Messageentity);
+    }
+
+    @Get('getmessages/:id')
+    getMessages(@Param('id') id:string){
+        return this.MessageService.getMessages(id);
+
     }
 }
