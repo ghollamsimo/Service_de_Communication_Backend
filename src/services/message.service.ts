@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { MessageEntity } from "src/entities/message.entity";
 import { MessageImplementation } from "src/repository/implementations/message.implementation";
+import { MessageDocument } from "src/schemas/messages.schema";
 
 @Injectable()
 export class MessageService{
@@ -14,5 +15,9 @@ export class MessageService{
 
     delete(id: string) {
         return this.MessageImplementatio.delete(id)
+    }
+
+    getMessages(id: string): Promise<MessageDocument[]> {
+        return this.MessageImplementatio.getMessages(id)
     }
 }

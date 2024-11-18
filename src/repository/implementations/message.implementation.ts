@@ -17,4 +17,8 @@ export class MessageImplementation implements MessageInterface{
     async delete(id: string): Promise<void> {
         await this.MessageModel.findByIdAndDelete(id).exec();
     }
+
+    getMessages(id: string): Promise<MessageDocument[]> {
+        return this.MessageModel.find({channelId:id}).exec()
+    }
 }
