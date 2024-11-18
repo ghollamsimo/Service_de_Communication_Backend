@@ -36,5 +36,9 @@ deleteChanel(id:string,ownerId:string): Promise<{ msg: string; }> {
 }
 
 
+getChanelDmByUsers(id:string,authId:string): Promise<ChannelDocument> {
+    return this.ChanelImplementations.getChanelDmByUsers(id, authId);
+}
+
 
 }

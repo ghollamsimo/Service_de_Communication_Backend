@@ -73,4 +73,25 @@ export  class ChanelImplementations implements  ChanelInetface{
 
     }
 
+    async getChanelDmByUsers(id: string, authId: string): Promise<ChannelDocument> {
+      const channel = await this.chanelModel
+        .findOne({
+          members: {
+            $all: [
+              { $elemMatch: { userId: id } },    
+              { $elemMatch: { userId: authId } }
+            ]
+          },
+          type: 'dm', 
+        })
+        .exec();
+    
+      if (!channel) {
+        throw new NotFoundException('Channel not found for the provided users');
+      }
+    
+      return channel;
+    }
+    
+
 }
