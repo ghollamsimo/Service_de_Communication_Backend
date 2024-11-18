@@ -225,11 +225,11 @@ export class FrienImplementatins implements FriendInterface {
                 {
                     $or: [
                         { receiverId: id },
-                        { requester: id }
+                        { requesterId: id }
                     ]
                 }
             ]
-        }).populate('requesterId', 'name');
+        }).populate('requesterId', 'name email').populate('receiverId', 'name email');
     }
 
 }
