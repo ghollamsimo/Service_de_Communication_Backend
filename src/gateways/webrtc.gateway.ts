@@ -6,12 +6,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from 'src/schemas/user.schema';
 import { Model } from 'mongoose';
 import { ChannelDocument } from 'src/schemas/chanel.schema';
+import { Message, MessageDocument } from 'src/schemas/messages.schema';
 
 @WebSocketGateway({cors:'*'})
 export class WebRtcGateway implements OnModuleInit {
   constructor(
     @InjectModel(User.name) private readonly UserModel: Model<UserDocument>,
-    @InjectModel('Channel') private readonly chanelModel: Model<ChannelDocument>
+    @InjectModel('Channel') private readonly chanelModel: Model<ChannelDocument>,
+    @InjectModel(Message.name) private readonly MessageModel: Model<MessageDocument>
   ) {}
 
   @WebSocketServer()
@@ -71,7 +73,14 @@ export class WebRtcGateway implements OnModuleInit {
     if (!channel) {
       throw new Error('Channel not found');
     }
-
+    const newMessage = new this.MessageModel({
+      senderId: userid,
+      channelId,
+      content,
+      timestamp: new Date(), 
+    });
+  
+    const savedMessage = await newMessage.save();
   
   
     const usersInChannel = channel.members || [];
@@ -94,10 +103,10 @@ export class WebRtcGateway implements OnModuleInit {
         const userSocket = this.server.sockets.sockets.get(socketId[0]);
         if (userSocket) {
             userSocket.emit('onMessage', {
-            msg: 'new message',
-            content: content,
-            channelId:channelId,
-            userId: member.userId,
+              messageId: savedMessage._id,
+              content: savedMessage.content,
+              channelId: savedMessage.channelId,
+              sender: savedMessage.senderId,
             });
         }
         } else {
