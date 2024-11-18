@@ -229,7 +229,16 @@ export class FrienImplementatins implements FriendInterface {
                     ]
                 }
             ]
-        }).populate('requesterId', 'name email').populate('receiverId', 'name email');
+        }) .populate({
+            path: 'requesterId',
+            select: 'name email',
+            match: { _id: { $ne: id } } 
+        })
+        .populate({
+            path: 'receiverId',
+            select: 'name email',
+            match: { _id: { $ne: id } }
+        });
     }
 
 }
