@@ -118,6 +118,19 @@ export class  ChanelsController {
       return  this.chanelService.deleteChanel(id,ownerId);
    }
 
+   @Get('channeldm/:id')
+    getChanelDmByUsers(
+    @Request() req,
+    @Param('id') id: string,
+   ){
+    
+       const authId = req.user._id;
+     
+
+       return this.chanelService.getChanelDmByUsers(id, authId)
+
+   }
+
     
 
 
