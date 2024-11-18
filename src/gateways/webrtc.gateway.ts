@@ -7,7 +7,7 @@ import { User, UserDocument } from 'src/schemas/user.schema';
 import { Model } from 'mongoose';
 import { ChannelDocument } from 'src/schemas/chanel.schema';
 
-@WebSocketGateway()
+@WebSocketGateway({cors:'*'})
 export class WebRtcGateway implements OnModuleInit {
   constructor(
     @InjectModel(User.name) private readonly UserModel: Model<UserDocument>,
@@ -45,6 +45,7 @@ export class WebRtcGateway implements OnModuleInit {
         }
   
         this.connectedUsers.set(socket.id, user._id.toString());
+        console.log(this.connectedUsers);
         
         socket.on('disconnect', () => {
           this.connectedUsers.delete(socket.id); 
@@ -58,8 +59,8 @@ export class WebRtcGateway implements OnModuleInit {
   
   @SubscribeMessage('newMessage')
   async onNewMessage(@MessageBody() body: any, @ConnectedSocket() client: Socket) {
-    const userId = this.connectedUsers.get(client.id);
-    if (!userId) {
+    const userid = this.connectedUsers.get(client.id);
+    if (!userid) {
       throw new UnauthorizedException('User not authenticated');
     }
   
@@ -87,15 +88,15 @@ export class WebRtcGateway implements OnModuleInit {
     connectedUsersInChannel.forEach(member => {
         
         const socketId = [...this.connectedUsers.entries()]
-      .find(([socketId, userId]) => userId === member.userId.toString());
+      .find(([socketId, userId]) => userId === member.userId.toString() && userId != userid);
          
         if (socketId) {
         const userSocket = this.server.sockets.sockets.get(socketId[0]);
         if (userSocket) {
             userSocket.emit('onMessage', {
             msg: 'new message',
-            content: 'Hello!',
-            channelId: 'someChannelId',
+            content: content,
+            channelId:channelId,
             userId: member.userId,
             });
         }
