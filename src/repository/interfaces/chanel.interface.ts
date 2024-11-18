@@ -11,6 +11,8 @@ export interface  ChanelInetface {
 
     getChanelById(id:string):Promise<ChannelDocument>;
 
+    getChanelDmByUsers(id:string,authId:string):Promise<ChannelDocument>;
+
     createChanel(ChannelEntity:ChannelEntity):Promise<ChannelDocument>;
 
     updateChanel(id: string,ChannelEntity:ChannelEntity):Promise<ChannelDocument>;
